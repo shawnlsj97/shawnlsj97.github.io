@@ -1,0 +1,423 @@
+---
+const TOTAL_DUCKS = 5;
+const ducks = Array.from({ length: TOTAL_DUCKS }, (_, index) => index);
+---
+
+<div class="top-section-animation" aria-hidden="true" data-top-animation>
+  <div class="top-water-surface"></div>
+  <div class="top-water-lines top-water-lines--one"></div>
+  <div class="top-water-lines top-water-lines--two"></div>
+  <div class="top-ripple-layer" data-ripple-layer></div>
+  <div class="top-duck-layer">
+    {
+      ducks.map((duck) => (
+        <span class="top-duck" data-duck data-duck-index={duck}>
+          <img
+            class="top-duck__image"
+            src="/images/assets/duck-transparent.png"
+            alt=""
+            width="1254"
+            height="1254"
+            loading="eager"
+            decoding="async"
+          />
+        </span>
+      ))
+    }
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const CONFIG = {
+      WATER_INTENSITY: 0.74,
+      RIPPLE_STRENGTH: 0.7,
+      DESKTOP_DUCK_COUNT: 3,
+      MOBILE_DUCK_COUNT: 1,
+      CURSOR_RADIUS: 108,
+      DIVE_COOLDOWN_MS: 2200,
+      DIVE_HIDE_MS: 1200,
+      RESURFACE_DELAY_MS: 2600,
+      SCROLL_EXIT_THRESHOLD: 0.78,
+      SURFACE_SPEED_MIN: 7,
+      SURFACE_SPEED_MAX: 15,
+      CARD_MAX_TILT: 4,
+      CARD_HIGHLIGHT_OPACITY: 0.16
+    };
+
+    const initTopAnimation = () => {
+      const hero = document.querySelector("[data-top-section]");
+      const animation = document.querySelector("[data-top-animation]");
+      const rippleLayer = document.querySelector("[data-ripple-layer]");
+      const card = document.querySelector("[data-profile-card]");
+
+      if (!(hero instanceof HTMLElement) || !(animation instanceof HTMLElement) || !(rippleLayer instanceof HTMLElement)) {
+        return;
+      }
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const ducks = Array.from(animation.querySelectorAll("[data-duck]")).filter((duck) => duck instanceof HTMLElement);
+      const timers = new Set();
+      let heroActive = true;
+      let scrollHidden = false;
+      let pointerInside = false;
+      let raf = 0;
+      let swimRaf = 0;
+      let resizeTimer = 0;
+      let lastSwimTime = 0;
+      let lastPointer = { x: 0, y: 0 };
+
+      animation.style.setProperty("--water-intensity", String(CONFIG.WATER_INTENSITY));
+      animation.style.setProperty("--ripple-strength", String(CONFIG.RIPPLE_STRENGTH));
+
+      const setTimer = (callback, delay) => {
+        const timer = window.setTimeout(() => {
+          timers.delete(timer);
+          callback();
+        }, delay);
+        timers.add(timer);
+        return timer;
+      };
+
+      const getVisibleCount = () => {
+        if (reducedMotion) {
+          return 0;
+        }
+        const mobileMode = !finePointer || window.innerWidth < 768;
+        return Math.min(ducks.length, mobileMode ? CONFIG.MOBILE_DUCK_COUNT : CONFIG.DESKTOP_DUCK_COUNT);
+      };
+
+      const isDuckAllowed = (duck) => ducks.indexOf(duck) < getVisibleCount();
+
+      const getSwimBounds = () => {
+        const rect = animation.getBoundingClientRect();
+        const marginX = finePointer ? 70 : 34;
+        const minY = Math.max(56, rect.height * 0.16);
+        const maxY = Math.max(minY + 1, rect.height * 0.78);
+
+        return { rect, marginX, minY, maxY };
+      };
+
+      const randomPosition = () => {
+        const rect = animation.getBoundingClientRect();
+        const marginX = finePointer ? 72 : 34;
+        const minY = Math.max(56, rect.height * 0.16);
+        const maxY = Math.max(minY + 1, rect.height * 0.78);
+        return {
+          x: marginX + Math.random() * Math.max(1, rect.width - marginX * 2),
+          y: minY + Math.random() * Math.max(1, maxY - minY)
+        };
+      };
+
+      const placeDuck = (duck, position, immediate = false) => {
+        duck.dataset.x = String(position.x);
+        duck.dataset.y = String(position.y);
+        duck.style.setProperty("--duck-x", `${position.x}px`);
+        duck.style.setProperty("--duck-y", `${position.y}px`);
+        const direction = Math.random() > 0.5 ? 1 : -1;
+        const speed = CONFIG.SURFACE_SPEED_MIN + Math.random() * (CONFIG.SURFACE_SPEED_MAX - CONFIG.SURFACE_SPEED_MIN);
+        const drift = (Math.random() - 0.5) * 3.2;
+        duck.dataset.vx = String(direction * speed);
+        duck.dataset.vy = String(drift);
+        setDuckFacing(duck, direction * -1);
+        duck.style.setProperty("--duck-drift", `${Math.random() > 0.5 ? 1 : -1}`);
+        duck.style.setProperty("--duck-scale", `${0.94 + Math.random() * 0.22}`);
+        duck.style.setProperty("--duck-wake-delay", `${Math.random() * -2.2}s`);
+        duck.style.setProperty("--duck-wake-lines-duration", `${1.85 + Math.random() * 0.75}s`);
+        duck.style.setProperty("--duck-wake-highlight-delay", `${Math.random() * -2.8}s`);
+        duck.style.setProperty("--duck-wake-highlight-duration", `${2.25 + Math.random() * 0.9}s`);
+        if (immediate) {
+          duck.classList.add("is-visible");
+        }
+      };
+
+      const setDuckFacing = (duck, facing) => {
+        duck.style.setProperty("--duck-facing", String(facing));
+      };
+
+      const createRipple = (position, type = "dive") => {
+        const ripple = document.createElement("span");
+        ripple.className = `top-water-ripple top-water-ripple--${type}`;
+        ripple.innerHTML = "<span></span><span></span><span></span>";
+        ripple.style.left = `${position.x}px`;
+        ripple.style.top = `${position.y}px`;
+        rippleLayer.append(ripple);
+        setTimer(() => ripple.remove(), type === "surface" ? 1180 : 980);
+      };
+
+      const surfaceDuck = (duck, delay = 0) => {
+        if (reducedMotion || !heroActive || scrollHidden || !isDuckAllowed(duck)) {
+          return;
+        }
+        setTimer(() => {
+          if (!heroActive || scrollHidden || !isDuckAllowed(duck)) {
+            return;
+          }
+          const position = randomPosition();
+          placeDuck(duck, position);
+          createRipple(position, "surface");
+          duck.classList.remove("is-diving", "is-hidden");
+          duck.classList.add("is-visible", "is-surfacing");
+          setTimer(() => duck.classList.remove("is-surfacing"), 760);
+        }, delay);
+      };
+
+      const diveDuck = (duck, options = {}) => {
+        if (reducedMotion || (!options.force && duck.dataset.diving === "true")) {
+          return;
+        }
+
+        const now = Date.now();
+        const lastDive = Number(duck.dataset.lastDive || 0);
+        if (!options.force && now - lastDive < CONFIG.DIVE_COOLDOWN_MS) {
+          return;
+        }
+
+        const position = {
+          x: Number(duck.dataset.x || 0),
+          y: Number(duck.dataset.y || 0)
+        };
+
+        duck.dataset.diving = "true";
+        duck.dataset.lastDive = String(now);
+        duck.classList.remove("is-surfacing", "is-hidden");
+        duck.classList.add("is-visible", "is-diving");
+        createRipple(position, "dive");
+
+        setTimer(() => {
+          duck.classList.remove("is-visible", "is-diving", "is-surfacing");
+          duck.classList.add("is-hidden");
+          duck.dataset.diving = "false";
+
+          if (!options.keepHidden) {
+            surfaceDuck(duck, CONFIG.RESURFACE_DELAY_MS);
+          }
+        }, CONFIG.DIVE_HIDE_MS);
+      };
+
+      const showInitialDucks = () => {
+        const visibleCount = getVisibleCount();
+        ducks.forEach((duck, index) => {
+          placeDuck(duck, randomPosition(), index < visibleCount);
+          duck.classList.toggle("is-visible", index < visibleCount);
+          duck.classList.toggle("is-hidden", index >= visibleCount);
+          duck.style.setProperty("--duck-delay", `${index * 420}ms`);
+        });
+      };
+
+      const clampDucksToViewport = () => {
+        finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        const visibleCount = getVisibleCount();
+        const { rect, marginX, minY, maxY } = getSwimBounds();
+
+        ducks.forEach((duck, index) => {
+          if (index >= visibleCount) {
+            duck.classList.remove("is-visible", "is-surfacing");
+            duck.classList.add("is-hidden");
+            duck.dataset.diving = "false";
+            return;
+          }
+
+          if (!duck.classList.contains("is-visible") || duck.dataset.diving === "true") {
+            return;
+          }
+
+          const x = Math.min(Math.max(Number(duck.dataset.x || marginX), marginX), rect.width - marginX);
+          const y = Math.min(Math.max(Number(duck.dataset.y || minY), minY), maxY);
+          duck.dataset.x = String(x);
+          duck.dataset.y = String(y);
+          duck.style.setProperty("--duck-x", `${x}px`);
+          duck.style.setProperty("--duck-y", `${y}px`);
+        });
+      };
+
+      const onResize = () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          clampDucksToViewport();
+          updateHeroState();
+        }, 120);
+      };
+
+      const swim = (time) => {
+        if (!lastSwimTime) {
+          lastSwimTime = time;
+        }
+        const delta = Math.min(0.05, (time - lastSwimTime) / 1000);
+        lastSwimTime = time;
+        const { rect, marginX, minY, maxY } = getSwimBounds();
+
+        ducks.forEach((duck) => {
+          if (!isDuckAllowed(duck) || !duck.classList.contains("is-visible") || duck.dataset.diving === "true") {
+            return;
+          }
+
+          let x = Number(duck.dataset.x || 0);
+          let y = Number(duck.dataset.y || 0);
+          let vx = Number(duck.dataset.vx || CONFIG.SURFACE_SPEED_MIN);
+          let vy = Number(duck.dataset.vy || 0);
+
+          x += vx * delta;
+          y += vy * delta;
+
+          if (x < marginX || x > rect.width - marginX) {
+            vx *= -1;
+            x = Math.min(Math.max(x, marginX), rect.width - marginX);
+            duck.dataset.vx = String(vx);
+            setDuckFacing(duck, vx >= 0 ? -1 : 1);
+          }
+
+          if (y < minY || y > maxY) {
+            vy *= -1;
+            y = Math.min(Math.max(y, minY), maxY);
+            duck.dataset.vy = String(vy);
+          }
+
+          duck.dataset.x = String(x);
+          duck.dataset.y = String(y);
+          duck.style.setProperty("--duck-x", `${x}px`);
+          duck.style.setProperty("--duck-y", `${y}px`);
+        });
+
+        swimRaf = window.requestAnimationFrame(swim);
+      };
+
+      const hideAllDucks = () => {
+        scrollHidden = true;
+        ducks.forEach((duck) => {
+          if (duck.classList.contains("is-visible") || duck.dataset.diving === "true") {
+            diveDuck(duck, { force: true, keepHidden: true });
+          } else {
+            duck.classList.add("is-hidden");
+          }
+        });
+      };
+
+      const resurfaceAllDucks = () => {
+        if (reducedMotion) {
+          return;
+        }
+        scrollHidden = false;
+        ducks.slice(0, getVisibleCount()).forEach((duck, index) => {
+          surfaceDuck(duck, CONFIG.RESURFACE_DELAY_MS + index * 180);
+        });
+      };
+
+      const checkPointer = () => {
+        raf = 0;
+        if (!finePointer || !pointerInside || scrollHidden || reducedMotion) {
+          return;
+        }
+
+        const rect = animation.getBoundingClientRect();
+        ducks.forEach((duck) => {
+          if (!duck.classList.contains("is-visible")) {
+            return;
+          }
+
+          const dx = Number(duck.dataset.x || 0) + rect.left - lastPointer.x;
+          const dy = Number(duck.dataset.y || 0) + rect.top - lastPointer.y;
+
+          if (Math.hypot(dx, dy) < CONFIG.CURSOR_RADIUS) {
+            diveDuck(duck);
+          }
+        });
+      };
+
+      const onPointerMove = (event) => {
+        if (!finePointer || reducedMotion) {
+          return;
+        }
+        const rect = animation.getBoundingClientRect();
+        pointerInside =
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+        lastPointer = { x: event.clientX, y: event.clientY };
+        if (!raf) {
+          raf = window.requestAnimationFrame(checkPointer);
+        }
+      };
+
+      const updateHeroState = () => {
+        const rect = hero.getBoundingClientRect();
+        const leavingThreshold = window.innerHeight * CONFIG.SCROLL_EXIT_THRESHOLD;
+        const nowActive = rect.bottom > leavingThreshold && rect.top < window.innerHeight;
+
+        if (nowActive !== heroActive) {
+          heroActive = nowActive;
+          animation.classList.toggle("is-out-of-view", !heroActive);
+        }
+
+        if (rect.bottom <= leavingThreshold && !scrollHidden) {
+          hideAllDucks();
+        } else if (nowActive && scrollHidden) {
+          resurfaceAllDucks();
+        }
+      };
+
+      const setupCardTilt = () => {
+        if (!(card instanceof HTMLElement) || !finePointer || reducedMotion) {
+          return;
+        }
+
+        card.style.setProperty("--card-highlight-opacity", String(CONFIG.CARD_HIGHLIGHT_OPACITY));
+
+        card.addEventListener("pointermove", (event) => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width;
+          const y = (event.clientY - rect.top) / rect.height;
+          const rotateY = (x - 0.5) * CONFIG.CARD_MAX_TILT * 2;
+          const rotateX = (0.5 - y) * CONFIG.CARD_MAX_TILT * 2;
+
+          card.style.setProperty("--card-rotate-x", `${rotateX.toFixed(2)}deg`);
+          card.style.setProperty("--card-rotate-y", `${rotateY.toFixed(2)}deg`);
+          card.style.setProperty("--card-highlight-x", `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty("--card-highlight-y", `${(y * 100).toFixed(1)}%`);
+          card.classList.add("is-tilting");
+        });
+
+        card.addEventListener("pointerleave", () => {
+          card.style.setProperty("--card-rotate-x", "0deg");
+          card.style.setProperty("--card-rotate-y", "0deg");
+          card.classList.remove("is-tilting");
+        });
+      };
+
+      if (reducedMotion) {
+        animation.classList.add("is-reduced-motion");
+      } else {
+        showInitialDucks();
+        swimRaf = window.requestAnimationFrame(swim);
+        window.addEventListener("pointermove", onPointerMove, { passive: true });
+        window.addEventListener("scroll", updateHeroState, { passive: true });
+        window.addEventListener("resize", onResize, { passive: true });
+        updateHeroState();
+      }
+
+      setupCardTilt();
+
+      window.addEventListener("pagehide", () => {
+        timers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(resizeTimer);
+        if (raf) {
+          window.cancelAnimationFrame(raf);
+        }
+        if (swimRaf) {
+          window.cancelAnimationFrame(swimRaf);
+        }
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("scroll", updateHeroState);
+        window.removeEventListener("resize", onResize);
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initTopAnimation, { once: true });
+    } else {
+      initTopAnimation();
+    }
+  })();
+</script>

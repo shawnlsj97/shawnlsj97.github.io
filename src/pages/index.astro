@@ -7,6 +7,7 @@ import ExperienceItem from "../components/ExperienceItem.astro";
 import HeroSystemVisual from "../components/HeroSystemVisual.astro";
 import ProjectFeature from "../components/ProjectFeature.astro";
 import SkillGroup from "../components/SkillGroup.astro";
+import TopSectionAnimation from "../components/TopSectionAnimation.astro";
 import { education, leadership } from "../data/education";
 import { experience } from "../data/experience";
 import { metrics, profile } from "../data/profile";
@@ -19,8 +20,12 @@ import { skillGroups } from "../data/skills";
   <SiteHeader />
 
   <main id="content">
-    <section class="page-shell flex min-h-[calc(100svh-7rem)] items-center pb-16 pt-12 sm:min-h-[calc(100svh-5rem)] sm:pb-24 sm:pt-16">
-      <div class="grid w-full gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+    <section
+      class="top-water-section page-shell relative isolate flex min-h-[calc(100svh-7rem)] items-center pb-16 pt-12 sm:min-h-[calc(100svh-5rem)] sm:pb-24 sm:pt-16"
+      data-top-section
+    >
+      <TopSectionAnimation />
+      <div class="relative z-10 grid w-full gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div>
           <p class="eyebrow" data-reveal style="--reveal-delay: 0ms">{profile.role} - {profile.location}</p>
           <h1

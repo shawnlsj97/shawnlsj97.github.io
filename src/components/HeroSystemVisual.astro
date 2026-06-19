@@ -17,7 +17,8 @@ const focusAreas = [
 ];
 ---
 
-<aside class="hero-visual profile-card panel p-4" aria-label="Profile summary">
+<aside class="hero-visual profile-card panel p-4" aria-label="Profile summary" data-profile-card>
+  <div class="profile-card-shine" aria-hidden="true"></div>
   <div class="hero-profile-frame" data-reveal data-reveal-scale style="--reveal-delay: 220ms">
     <img
       src={profile.image.src}

@@ -1,0 +1,117 @@
+---
+import "../styles/global.css";
+import { profile } from "../data/profile";
+
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+const {
+  title = "Shawn Lee Shi Jie | Senior Software Engineer",
+  description = profile.summary
+} = Astro.props;
+
+const ogImageUrl = new URL(profile.ogImage, profile.siteUrl).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="author" content={profile.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={profile.siteUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content="Shawn Lee, Senior Software Engineer - payments, platforms, and applied AI." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Shawn Lee, Senior Software Engineer - payments, platforms, and applied AI." />
+    <link rel="canonical" href={profile.siteUrl} />
+    <link rel="icon" href="./favicon.svg?v=2" type="image/svg+xml" sizes="any" />
+    <script is:inline>document.documentElement.classList.add("reveal-ready");</script>
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <dialog id="image-dialog" class="image-dialog" aria-labelledby="image-dialog-title">
+      <div class="image-dialog__chrome">
+        <p id="image-dialog-title" class="text-sm font-semibold text-ink-950"></p>
+        <button type="button" class="image-dialog__close" data-close-image-dialog aria-label="Close expanded image">
+          Close
+        </button>
+      </div>
+      <img id="image-dialog-img" alt="" />
+    </dialog>
+    <script>
+      const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+        revealItems.forEach((item) => item.setAttribute("data-revealed", "true"));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.setAttribute("data-revealed", "true");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            rootMargin: "0px 0px -12% 0px",
+            threshold: 0.16
+          }
+        );
+
+        revealItems.forEach((item) => observer.observe(item));
+      }
+
+      const imageDialog = document.querySelector("#image-dialog");
+      const imageDialogImage = document.querySelector("#image-dialog-img");
+      const imageDialogTitle = document.querySelector("#image-dialog-title");
+
+      document.querySelectorAll("[data-image-src]").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          if (!(imageDialog instanceof HTMLDialogElement) || !(imageDialogImage instanceof HTMLImageElement)) {
+            const href = trigger.getAttribute("data-image-src");
+            if (href) {
+              window.open(href, "_blank", "noopener,noreferrer");
+            }
+            return;
+          }
+
+          imageDialogImage.src = trigger.getAttribute("data-image-src") || "";
+          imageDialogImage.alt = trigger.getAttribute("data-image-alt") || "";
+
+          if (imageDialogTitle) {
+            imageDialogTitle.textContent = trigger.getAttribute("data-image-title") || "Project image";
+          }
+
+          if (typeof imageDialog.showModal === "function") {
+            imageDialog.showModal();
+          } else {
+            window.open(imageDialogImage.src, "_blank", "noopener,noreferrer");
+          }
+        });
+      });
+
+      document.querySelector("[data-close-image-dialog]")?.addEventListener("click", () => {
+        if (imageDialog instanceof HTMLDialogElement) {
+          imageDialog.close();
+        }
+      });
+
+      imageDialog?.addEventListener("click", (event) => {
+        if (event.target === imageDialog && imageDialog instanceof HTMLDialogElement) {
+          imageDialog.close();
+        }
+      });
+    </script>
+  </body>
+</html>

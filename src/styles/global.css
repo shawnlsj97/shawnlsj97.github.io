@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  color-scheme: light;
+  background: #fbfbfd;
+  color: #1d1d1f;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.05), transparent 28rem),
+    linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 100%);
+}
+
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 260ms var(--ease-out-strong),
+    transform 260ms var(--ease-out-strong);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-ready [data-reveal-scale] {
+  transform: translateY(10px) scale(1.025);
+}
+
+.reveal-ready [data-revealed="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-page px-5 sm:px-8 lg:px-10;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-ink-600;
+  }
+
+  .panel {
+    @apply rounded-3xl border border-black/10 bg-white/70 shadow-soft backdrop-blur;
+    transition:
+      transform 180ms var(--ease-out-strong),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .hero-visual {
+    @apply lg:mt-8;
+  }
+
+  .hero-profile-frame {
+    @apply relative h-44 overflow-hidden rounded-[1.35rem] border border-black/10 bg-paper-100 sm:h-52 lg:h-56;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7);
+  }
+
+  .hero-profile-frame img,
+  .hero-focus-panel,
+  .hero-focus-row {
+    transition:
+      transform 220ms var(--ease-out-strong),
+      border-color 220ms ease,
+      background-color 220ms ease,
+      opacity 220ms ease;
+  }
+
+  .profile-card {
+    transition: none;
+  }
+
+  .project-image-trigger {
+    position: relative;
+    cursor: zoom-in;
+    min-height: 14rem;
+  }
+
+  .project-card {
+    transition: none;
+  }
+
+  .project-image-large {
+    aspect-ratio: 16 / 9;
+    max-height: 28rem;
+  }
+
+  .project-expand-badge {
+    @apply absolute bottom-4 right-4 rounded-full border border-white/40 bg-ink-950/80 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur;
+    opacity: 0.82;
+    transition:
+      opacity 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .image-dialog {
+    width: min(94vw, 1200px);
+    max-height: 90vh;
+    border: 1px solid rgb(0 0 0 / 0.12);
+    border-radius: 24px;
+    padding: 0;
+    background: #fbfbfd;
+    color: #1d1d1f;
+    box-shadow: 0 24px 80px rgb(0 0 0 / 0.22);
+  }
+
+  .image-dialog::backdrop {
+    background: rgb(17 17 17 / 0.72);
+    backdrop-filter: blur(10px);
+  }
+
+  .image-dialog__chrome {
+    @apply flex items-center justify-between gap-4 border-b border-black/10 px-5 py-4;
+  }
+
+  .image-dialog__close {
+    @apply rounded-full border border-black/10 bg-white px-3 py-1.5 text-sm font-medium text-ink-900;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      transform 140ms var(--ease-out-strong);
+  }
+
+  .image-dialog img {
+    display: block;
+    max-height: calc(90vh - 4rem);
+    width: 100%;
+    object-fit: contain;
+    background: #f5f5f7;
+  }
+
+  .link-pill {
+    @apply inline-flex min-h-10 items-center justify-center rounded-full border border-black/10 bg-white/70 px-4 py-2 text-sm font-medium text-ink-900;
+    transition:
+      transform 150ms var(--ease-out-strong),
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .primary-pill {
+    @apply inline-flex min-h-11 items-center justify-center rounded-full bg-ink-950 px-5 py-3 text-sm font-semibold text-white;
+    transition:
+      transform 150ms var(--ease-out-strong),
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .nav-link {
+    @apply rounded-full px-2 py-1 text-ink-700;
+    transition:
+      color 140ms ease,
+      background-color 140ms ease;
+  }
+
+  .mobile-nav-link {
+    @apply shrink-0 rounded-full px-3 py-2 text-ink-700;
+    transition:
+      color 140ms ease,
+      background-color 140ms ease;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel:hover {
+    transform: translateY(-2px);
+    border-color: rgb(0 0 0 / 0.14);
+    box-shadow: 0 18px 55px rgb(17 17 17 / 0.08);
+  }
+
+  .profile-card:hover {
+    transform: none;
+    border-color: rgb(0 0 0 / 0.1);
+    box-shadow: 0 18px 60px rgb(17 17 17 / 0.06);
+  }
+
+  .project-card:hover {
+    transform: none;
+    border-color: rgb(0 0 0 / 0.1);
+    box-shadow: 0 18px 60px rgb(17 17 17 / 0.06);
+  }
+
+  .link-pill:hover {
+    transform: translateY(-1px);
+    border-color: rgb(0 0 0 / 0.2);
+    background-color: rgb(255 255 255 / 1);
+  }
+
+  .primary-pill:hover {
+    transform: translateY(-1px);
+    background-color: #2d2d31;
+  }
+
+  .project-image-trigger:focus-visible .project-expand-badge {
+    border-color: rgb(255 255 255 / 0.55);
+    background-color: rgb(17 17 17 / 0.9);
+    opacity: 1;
+  }
+
+  .image-dialog__close:hover {
+    border-color: rgb(0 0 0 / 0.2);
+    background-color: #f5f5f7;
+  }
+
+  .nav-link:hover,
+  .mobile-nav-link:hover {
+    color: #111111;
+    background-color: rgb(255 255 255 / 0.7);
+  }
+}
+
+.link-pill:active,
+.primary-pill:active,
+.image-dialog__close:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0ms;
+    transition-property: opacity;
+  }
+
+  .link-pill,
+  .primary-pill,
+  .nav-link,
+  .mobile-nav-link,
+  .panel,
+  .hero-profile-frame img,
+  .hero-focus-panel,
+  .hero-focus-row {
+    transition-property: background-color, border-color, color;
+  }
+
+  .link-pill:hover,
+  .primary-pill:hover,
+  .panel:hover,
+  .link-pill:active,
+  .primary-pill:active,
+  .image-dialog__close:active {
+    transform: none;
+  }
+}

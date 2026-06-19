@@ -1,0 +1,68 @@
+---
+import { profile } from "../data/profile";
+
+const navItems = [
+  { label: "Experience", href: "#experience" },
+  { label: "Projects", href: "#projects" },
+  { label: "Skills", href: "#skills" },
+  { label: "Resume", href: profile.resumeUrl }
+];
+---
+
+<header class="page-shell sticky top-0 z-50 space-y-2 pt-4">
+  <a
+    href="#content"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-950"
+  >
+    Skip to content
+  </a>
+  <nav
+    aria-label="Primary navigation"
+    class="flex items-center justify-between rounded-full border border-black/10 bg-paper-50/80 px-4 py-3 shadow-[0_12px_40px_rgba(17,17,17,0.05)] backdrop-blur-xl"
+  >
+    <a href="#top" class="text-sm font-semibold tracking-tight text-ink-950">
+      Shawn Lee
+    </a>
+    <div class="hidden items-center gap-6 text-sm font-medium text-ink-700 md:flex">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class="nav-link"
+            target={item.href.startsWith("http") ? "_blank" : undefined}
+            rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+    <a href={`mailto:${profile.email}`} class="link-pill hidden sm:inline-flex">
+      Contact
+    </a>
+    <a href={profile.resumeUrl} class="link-pill sm:hidden">
+      Resume
+    </a>
+  </nav>
+  <nav
+    aria-label="Mobile section navigation"
+    class="flex gap-2 overflow-x-auto rounded-full border border-black/10 bg-paper-50/75 p-2 text-sm font-medium text-ink-700 shadow-[0_12px_40px_rgba(17,17,17,0.04)] backdrop-blur-xl md:hidden"
+  >
+    {
+      navItems.slice(0, 3).map((item) => (
+        <a
+          href={item.href}
+          class="mobile-nav-link"
+        >
+          {item.label}
+        </a>
+      ))
+    }
+    <a
+      href={`mailto:${profile.email}`}
+      class="mobile-nav-link"
+    >
+      Contact
+    </a>
+  </nav>
+</header>

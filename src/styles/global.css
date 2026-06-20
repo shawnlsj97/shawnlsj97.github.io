@@ -584,11 +584,15 @@ a {
 
 @keyframes duck-idle {
   0% {
-    transform: translate3d(calc(var(--duck-drift) * -2px), -1px, 0) rotate(-0.35deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate3d(calc(var(--duck-drift) * 2px), 1.5px, 0) rotate(0.22deg);
   }
 
   100% {
-    transform: translate3d(calc(var(--duck-drift) * 3px), 2px, 0) rotate(0.45deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
 }
 

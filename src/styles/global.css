@@ -486,8 +486,35 @@ a {
       background-color 140ms ease;
   }
 
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-nav-shell {
+    position: relative;
+  }
+
+  .mobile-nav-shell::after {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 3rem;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgb(251 251 253 / 0), rgb(251 251 253 / 0.88) 78%);
+    content: "";
+  }
+
+  .mobile-nav-scroller {
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 2.25rem), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 2.25rem), transparent 100%);
+  }
+
   .mobile-nav-link {
-    @apply shrink-0 rounded-full px-3 py-2 text-ink-700;
+    @apply inline-flex min-h-10 shrink-0 items-center justify-center rounded-full px-3 py-2 text-center text-ink-700;
     transition:
       color 140ms ease,
       background-color 140ms ease;

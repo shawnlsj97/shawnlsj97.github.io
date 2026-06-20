@@ -7,6 +7,13 @@ const navItems = [
   { label: "Skills", href: "#skills" },
   { label: "Resume", href: profile.resumeUrl }
 ];
+
+const mobileNavItems = [
+  { label: "Experience", href: "#experience" },
+  { label: "Projects", href: "#projects" },
+  { label: "Skills", href: "#skills" },
+  { label: "Contact", href: `mailto:${profile.email}` }
+];
 ---
 
 <header class="page-shell sticky top-0 z-50 space-y-2 pt-4">
@@ -46,23 +53,21 @@ const navItems = [
   </nav>
   <nav
     aria-label="Mobile section navigation"
-    class="flex gap-2 overflow-x-auto rounded-full border border-black/10 bg-paper-50/75 p-2 text-sm font-medium text-ink-700 shadow-[0_12px_40px_rgba(17,17,17,0.04)] backdrop-blur-xl md:hidden"
+    class="mobile-nav-shell overflow-hidden rounded-full border border-black/10 bg-paper-50/75 text-sm font-medium text-ink-700 shadow-[0_12px_40px_rgba(17,17,17,0.04)] backdrop-blur-xl md:hidden"
   >
-    {
-      navItems.slice(0, 3).map((item) => (
-        <a
-          href={item.href}
-          class="mobile-nav-link"
-        >
-          {item.label}
-        </a>
-      ))
-    }
-    <a
-      href={`mailto:${profile.email}`}
-      class="mobile-nav-link"
+    <div
+      class="mobile-nav-scroller no-scrollbar flex touch-pan-x gap-2 overflow-x-auto overscroll-x-contain p-2"
     >
-      Contact
-    </a>
+      {
+        mobileNavItems.map((item) => (
+          <a
+            href={item.href}
+            class="mobile-nav-link"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
   </nav>
 </header>

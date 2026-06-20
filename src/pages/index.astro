@@ -1,0 +1,170 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import Section from "../components/Section.astro";
+import MetricCard from "../components/MetricCard.astro";
+import ExperienceItem from "../components/ExperienceItem.astro";
+import HeroSystemVisual from "../components/HeroSystemVisual.astro";
+import ProjectFeature from "../components/ProjectFeature.astro";
+import SkillGroup from "../components/SkillGroup.astro";
+import TopSectionAnimation from "../components/TopSectionAnimation.astro";
+import { education, leadership } from "../data/education";
+import { experience } from "../data/experience";
+import { metrics, profile } from "../data/profile";
+import { projects } from "../data/projects";
+import { skillGroups } from "../data/skills";
+---
+
+<BaseLayout>
+  <div id="top"></div>
+  <SiteHeader />
+
+  <main id="content">
+    <section
+      class="top-water-section page-shell relative isolate flex min-h-[calc(88svh-7rem)] items-start pb-10 pt-10 sm:min-h-[calc(86svh-5rem)] sm:pb-16 sm:pt-12 lg:min-h-[calc(82svh-5rem)] lg:items-center lg:pb-14"
+      data-top-section
+    >
+      <TopSectionAnimation />
+      <div class="relative z-10 grid w-full gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-8">
+        <div>
+          <p class="eyebrow" data-reveal style="--reveal-delay: 0ms">{profile.role} - {profile.location}</p>
+          <h1
+            class="mt-5 max-w-5xl text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-6xl sm:tracking-[-0.04em] lg:text-7xl"
+            data-reveal
+            style="--reveal-delay: 60ms"
+          >
+            {profile.headline}
+          </h1>
+          <p
+            class="mt-6 max-w-2xl text-base leading-8 text-ink-700 sm:mt-7 sm:text-xl sm:leading-9"
+            data-reveal
+            style="--reveal-delay: 120ms"
+          >
+            {profile.summary}
+          </p>
+          <div class="mt-9 flex flex-wrap gap-3" data-reveal style="--reveal-delay: 180ms">
+            <a class="primary-pill" href={profile.resumeUrl}>View resume</a>
+            <a class="link-pill" href="#projects">See projects</a>
+            {
+              profile.links.slice(0, 2).map((link) => (
+                <a class="link-pill" href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.label}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+        <HeroSystemVisual />
+      </div>
+    </section>
+
+    <section aria-label="Selected impact" class="page-shell pb-8 sm:pb-10">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => <div class="h-full" data-reveal><MetricCard {...metric} /></div>)}
+      </div>
+    </section>
+
+    <Section
+      id="experience"
+      eyebrow="Experience"
+      title="Engineering for systems where correctness, speed, and reliability matter."
+      intro="Recent work spans low-latency C++ payment components, API throughput optimization, and AI workflows for engineering teams."
+    >
+      <div>
+        {experience.map((item) => <div data-reveal><ExperienceItem item={item} /></div>)}
+      </div>
+    </Section>
+
+    <Section
+      id="projects"
+      eyebrow="Featured projects"
+      title="Selected work across systems, AI, and product engineering."
+      intro="A closer look at the platforms, tools, and experiments that shaped how I build software."
+    >
+      <div class="space-y-5">
+        {projects.map((project) => <div data-reveal><ProjectFeature project={project} /></div>)}
+      </div>
+    </Section>
+
+    <Section
+      id="skills"
+      eyebrow="Skills"
+      title="Built around systems engineering, backend platforms, and applied AI."
+    >
+      <div class="grid gap-x-10 lg:grid-cols-2">
+        {skillGroups.map((group) => <div data-reveal><SkillGroup title={group.title} skills={group.skills} /></div>)}
+      </div>
+    </Section>
+
+    <Section
+      id="education"
+      eyebrow="Education and leadership"
+      title="Academic foundation and leadership highlights."
+    >
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="panel p-7">
+          <h3 class="text-xl font-semibold tracking-tight text-ink-950">Education</h3>
+          <div class="mt-6 space-y-6">
+            {
+              education.map((item) => (
+                <article>
+                  <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <h4 class="font-semibold text-ink-950">{item.school}</h4>
+                    <p class="text-sm font-medium text-ink-600">{item.period}</p>
+                  </div>
+                  <p class="mt-1 text-sm text-ink-700">{item.program}</p>
+                  <p class="mt-2 text-sm leading-6 text-ink-600">{item.detail}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+        <div class="panel p-7">
+          <h3 class="text-xl font-semibold tracking-tight text-ink-950">Leadership</h3>
+          <div class="mt-6 space-y-6">
+            {
+              leadership.map((item) => (
+                <article>
+                  <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <h4 class="font-semibold text-ink-950">{item.title}</h4>
+                    <p class="text-sm font-medium text-ink-600">{item.period}</p>
+                  </div>
+                  <p class="mt-1 text-sm text-ink-700">{item.organization}</p>
+                  <p class="mt-2 text-sm leading-6 text-ink-600">{item.detail}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </Section>
+  </main>
+
+  <footer class="page-shell pb-10">
+    <div class="border-t border-black/10 pt-8">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm font-semibold text-ink-950">Shawn Lee</p>
+          <p class="mt-1 text-sm text-ink-600">
+            Senior Software Engineer - Payments, Platforms, and Applied AI.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a class="link-pill" href={profile.resumeUrl}>Resume</a>
+          {
+            profile.links.map((link) => (
+              <a
+                class="link-pill"
+                href={link.href}
+                target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>

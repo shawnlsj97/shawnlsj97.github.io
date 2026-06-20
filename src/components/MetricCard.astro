@@ -1,0 +1,17 @@
+---
+type Props = {
+  value: string;
+  label: string;
+  detail: string;
+};
+
+const { value, label, detail } = Astro.props;
+---
+
+<article class="panel h-full p-5 sm:p-6">
+  <p class="text-4xl font-semibold tracking-tight text-ink-950">{value}</p>
+  <h3 class="mt-2.5 text-sm font-semibold uppercase tracking-[0.14em] text-ink-700">
+    {label}
+  </h3>
+  <p class="mt-2.5 text-sm leading-6 text-ink-600">{detail}</p>
+</article>

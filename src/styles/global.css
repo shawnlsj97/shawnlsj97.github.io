@@ -16,6 +16,13 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 8rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 4.75rem;
+  }
 }
 
 body {
@@ -343,7 +350,7 @@ a {
   }
 
   .hero-profile-frame {
-    @apply relative h-44 overflow-hidden rounded-[1.35rem] border border-black/10 bg-paper-100 sm:h-52 lg:h-56;
+    @apply relative h-40 overflow-hidden rounded-[1.35rem] border border-black/10 bg-paper-100 sm:h-52 lg:h-56;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7);
   }
 

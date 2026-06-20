@@ -8,7 +8,7 @@ type Props = {
 const { item } = Astro.props;
 ---
 
-<article class="grid gap-6 border-t border-black/10 py-8 lg:grid-cols-[0.75fr_1.6fr]">
+<article class="grid gap-5 border-t border-black/10 py-6 lg:grid-cols-[0.75fr_1.6fr] lg:gap-6">
   <div>
     <p class="text-sm font-medium text-ink-600">{item.period}</p>
     <h3 class="mt-2 text-xl font-semibold tracking-tight text-ink-950">{item.role}</h3>
@@ -16,12 +16,12 @@ const { item } = Astro.props;
   </div>
   <div>
     <p class="text-base leading-8 text-ink-700">{item.summary}</p>
-    <ul class="mt-5 space-y-3 text-sm leading-7 text-ink-700">
+    <ul class="mt-4 space-y-2.5 text-sm leading-7 text-ink-700">
       {item.bullets.map((bullet) => <li class="pl-4 before:-ml-4 before:pr-2 before:text-ink-400 before:content-['-']">{bullet}</li>)}
     </ul>
     {
       item.technologies && (
-        <ul class="mt-5 flex flex-wrap gap-2" aria-label={`${item.role} technologies`}>
+        <ul class="mt-4 flex flex-wrap gap-2" aria-label={`${item.role} technologies`}>
           {item.technologies.map((technology) => (
             <li class="rounded-full border border-black/10 bg-white/60 px-3 py-1 text-xs font-medium text-ink-700">
               {technology}

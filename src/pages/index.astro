@@ -21,11 +21,11 @@ import { skillGroups } from "../data/skills";
 
   <main id="content">
     <section
-      class="top-water-section page-shell relative isolate flex min-h-[calc(100svh-7rem)] items-center pb-16 pt-12 sm:min-h-[calc(100svh-5rem)] sm:pb-24 sm:pt-16"
+      class="top-water-section page-shell relative isolate flex min-h-[calc(88svh-7rem)] items-start pb-10 pt-10 sm:min-h-[calc(86svh-5rem)] sm:pb-16 sm:pt-12 lg:min-h-[calc(82svh-5rem)] lg:items-center lg:pb-14"
       data-top-section
     >
       <TopSectionAnimation />
-      <div class="relative z-10 grid w-full gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+      <div class="relative z-10 grid w-full gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-8">
         <div>
           <p class="eyebrow" data-reveal style="--reveal-delay: 0ms">{profile.role} - {profile.location}</p>
           <h1
@@ -58,7 +58,7 @@ import { skillGroups } from "../data/skills";
       </div>
     </section>
 
-    <section aria-label="Selected impact" class="page-shell pb-12 sm:pb-16">
+    <section aria-label="Selected impact" class="page-shell pb-8 sm:pb-10">
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => <div class="h-full" data-reveal><MetricCard {...metric} /></div>)}
       </div>
@@ -81,7 +81,7 @@ import { skillGroups } from "../data/skills";
       title="Selected work across systems, AI, and product engineering."
       intro="A closer look at the platforms, tools, and experiments that shaped how I build software."
     >
-      <div class="space-y-6">
+      <div class="space-y-5">
         {projects.map((project) => <div data-reveal><ProjectFeature project={project} /></div>)}
       </div>
     </Section>

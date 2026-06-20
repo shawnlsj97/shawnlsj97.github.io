@@ -12,10 +12,11 @@ Clean, static-first personal portfolio for Shawn Lee Shi Jie.
 ## Commands
 
 ```bash
-npm install
-npm run dev
-npm run build
-npm run preview
+Install dependencies: npm install
+Local development with hot reload: npm run dev
+
+Creates production build: npm run build
+Serve production files: npm run preview
 ```
 
 The latest public resume is served from `public/resume.pdf`.

@@ -6,10 +6,12 @@ This is a static Astro + Tailwind portfolio. Source lives in `src/`: reusable UI
 
 ## Build, Test, and Development Commands
 
-On the local development system, run Node and npm from the `conda` base environment. Activate it first if `node` or `npm` is not already on `PATH`:
+On the local development system, Node and npm are typically provided through `nvm`. Verify they are available with `node -v` and `npm -v`. If either command is missing, load `nvm` and select the installed default Node version before running project commands:
 
 ```bash
-conda activate base
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use default
 ```
 
 - `npm install`: install dependencies.

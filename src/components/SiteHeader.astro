@@ -29,8 +29,8 @@ const navItems = [
           <a
             href={item.href}
             class="nav-link"
-            target={item.href.startsWith("http") ? "_blank" : undefined}
-            rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            target={item.href.startsWith("http") || item.href === profile.resumeUrl ? "_blank" : undefined}
+            rel={item.href.startsWith("http") || item.href === profile.resumeUrl ? "noopener noreferrer" : undefined}
           >
             {item.label}
           </a>
@@ -40,7 +40,7 @@ const navItems = [
     <a href={`mailto:${profile.email}`} class="link-pill hidden sm:inline-flex">
       Contact
     </a>
-    <a href={profile.resumeUrl} class="link-pill sm:hidden">
+    <a href={profile.resumeUrl} class="link-pill sm:hidden" target="_blank" rel="noopener noreferrer">
       Resume
     </a>
   </nav>

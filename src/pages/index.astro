@@ -43,7 +43,9 @@ import { skillGroups } from "../data/skills";
             {profile.summary}
           </p>
           <div class="mt-9 flex flex-wrap gap-3" data-reveal style="--reveal-delay: 180ms">
-            <a class="primary-pill" href={profile.resumeUrl}>View resume</a>
+            <a class="primary-pill" href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
+              View resume
+            </a>
             <a class="link-pill" href="#projects">See projects</a>
             {
               profile.links.slice(0, 2).map((link) => (
@@ -150,7 +152,9 @@ import { skillGroups } from "../data/skills";
           </p>
         </div>
         <div class="flex flex-wrap gap-3">
-          <a class="link-pill" href={profile.resumeUrl}>Resume</a>
+          <a class="link-pill" href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
+            Resume
+          </a>
           {
             profile.links.map((link) => (
               <a
